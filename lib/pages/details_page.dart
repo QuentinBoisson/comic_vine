@@ -1,7 +1,9 @@
 import 'dart:ui';
 
 import 'package:comic_vine/assets/app_colors.dart';
+import 'package:comic_vine/assets/resources.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class DetailsPage extends StatefulWidget {
   final String title;
@@ -45,23 +47,54 @@ class _DetailsPageState extends State<DetailsPage> {
       body: SizedBox.expand(
         child: Stack(
           children: [
-            Image.network(
-              "https://hdqwalls.com/wallpapers/marvel-agents-of-shield-to.jpg",
+            Image.asset(
+              widget.backgroundImagePath,
               width: double.infinity,
-              fit: BoxFit.cover,
+              fit: BoxFit.none,
             ),
             Container(
-              height: 200,
               width: double.infinity,
               child: BackdropFilter(
                 filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
                 child: Container(color: Colors.black.withOpacity(0.3)),
               ),
             ),
+            Container(
+              margin: const EdgeInsetsDirectional.only(
+                top: 75,
+                start: 16,
+                end: 16,
+              ),
+              height: 175,
+              child: Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.all(
+                      Radius.circular(10),
+                    ),
+                    child: Image.asset(
+                      widget.miniaturePath,
+                      fit: BoxFit.cover,
+                      width: 95,
+                      height: 127,
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 15,
+                  ),
+                  Column(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: widget.titleCardDetails,
+                  )
+                ],
+              ),
+            ),
             Positioned.fill(
               child: Container(
                 margin: const EdgeInsetsDirectional.only(
-                  top: 200,
+                  top: 250,
                 ),
                 child: DetailsTabs(tabs: widget.tabs),
               ),
@@ -93,62 +126,158 @@ class _DetailsTabsState extends State<DetailsTabs> {
       child: Expanded(
         child: Column(
           children: [
-            Container(
-              height: 30,
-              color: Colors.black.withOpacity(0.3),
-              child: const TabBar(
-                indicator: BoxDecoration(
-                  border: Border(
-                      bottom: BorderSide(color: AppColors.orange, width: 5)),
-                ),
-                labelColor: Colors.white,
-                unselectedLabelColor: Colors.white,
-                tabs: [
-                  Tab(
-                    text: 'Histoire',
-                  ),
-                  Tab(
-                    text: 'Personnages',
-                  ),
-                  Tab(
-                    text: 'Épisodes',
-                  ),
-                ],
-              ),
-            ),
-            const Expanded(
+            const DetailsTabBar(),
+            Expanded(
               child: TabBarView(
                 children: [
-                  Padding(
-                    padding: EdgeInsets.only(top: 10),
-                    child: Column(
-                      children: [
-                        Text("Tab1"),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 10),
-                    child: Column(
-                      children: [
-                        Text("Tab2"),
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 10),
-                    child: Column(
-                      children: [
-                        Text("Tab3"),
-                      ],
-                    ),
-                  ),
+                  DetailsTabContainer(child: widget.tabs[0]),
+                  DetailsTabContainer(child: widget.tabs[1]),
+                  DetailsTabContainer(child: widget.tabs[2]),
                 ],
               ),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class DetailsTabContainer extends StatelessWidget {
+  final Widget child;
+  const DetailsTabContainer({
+    super.key,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.only(top: 25, left: 25, right: 25),
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadiusDirectional.vertical(
+          top: Radius.circular(20),
+        ),
+        color: AppColors.screenBackground,
+      ),
+      child: SingleChildScrollView(child: child),
+    );
+  }
+}
+
+class DetailsTabBar extends StatelessWidget {
+  const DetailsTabBar({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 30,
+      child: const TabBar(
+        indicator: BoxDecoration(
+          border: Border(bottom: BorderSide(color: AppColors.orange, width: 5)),
+        ),
+        labelColor: Colors.white,
+        unselectedLabelColor: Colors.grey,
+        dividerHeight: 0,
+        tabs: [
+          Tab(
+            text: 'Histoire',
+          ),
+          Tab(
+            text: 'Personnages',
+          ),
+          Tab(
+            text: 'Épisodes',
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class TitleCardDetails extends StatelessWidget {
+  final String iconPath;
+  final String text;
+  const TitleCardDetails({
+    super.key,
+    required this.iconPath,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SvgPicture.asset(
+            iconPath,
+            width: 20,
+            colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcATop),
+          ),
+          SizedBox(
+            width: 5,
+          ),
+          Text(
+            text,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class ExampleDetailsPage extends StatelessWidget {
+  const ExampleDetailsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const DetailsPage(
+      title: "Agents of S.H.I.E.L.D.",
+      titleCardDetails: [
+        TitleCardDetails(
+          iconPath: AppVectorialImages.icPublisherBicolor,
+          text: 'Marvel',
+        ),
+        TitleCardDetails(
+          iconPath: AppVectorialImages.icTvBicolor,
+          text: '136 épisodes',
+        ),
+        TitleCardDetails(
+          iconPath: AppVectorialImages.icCalendarBicolor,
+          text: '2013',
+        ),
+      ],
+      tabs: [
+        Column(
+          children: [
+            Text(
+              "The missions of the Strategic Homeland Intervention, Enforcement and Logistics Division. A small team of operatives led by Agent Coulson (Clark Gregg) who must deal with the strange new world of \"superheroes\" after the \"Battle of New York\", protecting the public from new and unknown threats.",
+              style: TextStyle(color: Colors.white),
+              textAlign: TextAlign.justify,
+            ),
+            SizedBox(
+              height: 400,
+            ),
+            Text("Histoire de la série", style: TextStyle(color: Colors.white)),
+            Text("Histoire de la série", style: TextStyle(color: Colors.white)),
+            Text("Histoire de la série", style: TextStyle(color: Colors.white)),
+            Text("Histoire de la série", style: TextStyle(color: Colors.white)),
+            Text("Histoire de la série", style: TextStyle(color: Colors.white)),
+            Text("Histoire de la série", style: TextStyle(color: Colors.white)),
+            Text("Histoire de la série", style: TextStyle(color: Colors.white)),
+          ],
+        ),
+        Text("Personnages de la série", style: TextStyle(color: Colors.white)),
+        Text("Episodes de la série", style: TextStyle(color: Colors.white)),
+      ],
+      backgroundImagePath: AppImages.agentsOfShieldBackground,
+      miniaturePath: AppImages.agentsOfShieldMini,
     );
   }
 }
