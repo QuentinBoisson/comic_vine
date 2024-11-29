@@ -1,3 +1,6 @@
+import 'dart:ui';
+
+import 'package:comic_vine/assets/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class DetailsPage extends StatefulWidget {
@@ -24,10 +27,48 @@ class _DetailsPageState extends State<DetailsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text(widget.title),
+        backgroundColor: Colors.transparent,
+        title: Text(
+          widget.title,
+          style: const TextStyle(color: Colors.white),
+        ),
+        leading: IconButton(
+          onPressed: () {},
+          icon: const Icon(
+            Icons.arrow_back,
+            color: Colors.white,
+          ),
+        ),
       ),
-      body: DetailsTabs(tabs: widget.tabs),
+      body: SizedBox.expand(
+        child: Stack(
+          children: [
+            Image.network(
+              "https://hdqwalls.com/wallpapers/marvel-agents-of-shield-to.jpg",
+              width: double.infinity,
+              fit: BoxFit.cover,
+            ),
+            Container(
+              height: 200,
+              width: double.infinity,
+              child: BackdropFilter(
+                filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+                child: Container(color: Colors.black.withOpacity(0.3)),
+              ),
+            ),
+            Positioned.fill(
+              child: Container(
+                margin: const EdgeInsetsDirectional.only(
+                  top: 200,
+                ),
+                child: DetailsTabs(tabs: widget.tabs),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
@@ -52,25 +93,58 @@ class _DetailsTabsState extends State<DetailsTabs> {
       child: Expanded(
         child: Column(
           children: [
-            const TabBar(
-              tabs: [
-                Tab(icon: Icon(Icons.directions_car)),
-                Tab(icon: Icon(Icons.directions_transit)),
-                Tab(icon: Icon(Icons.directions_bike)),
-              ],
+            Container(
+              height: 30,
+              color: Colors.black.withOpacity(0.3),
+              child: const TabBar(
+                indicator: BoxDecoration(
+                  border: Border(
+                      bottom: BorderSide(color: AppColors.orange, width: 5)),
+                ),
+                labelColor: Colors.white,
+                unselectedLabelColor: Colors.white,
+                tabs: [
+                  Tab(
+                    text: 'Histoire',
+                  ),
+                  Tab(
+                    text: 'Personnages',
+                  ),
+                  Tab(
+                    text: 'Épisodes',
+                  ),
+                ],
+              ),
             ),
-            TabBarView(
-              children: [
-                Expanded(
-                  child: widget.tabs[0],
-                ),
-                Expanded(
-                  child: widget.tabs[1],
-                ),
-                Expanded(
-                  child: widget.tabs[2],
-                ),
-              ],
+            const Expanded(
+              child: TabBarView(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.only(top: 10),
+                    child: Column(
+                      children: [
+                        Text("Tab1"),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 10),
+                    child: Column(
+                      children: [
+                        Text("Tab2"),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(top: 10),
+                    child: Column(
+                      children: [
+                        Text("Tab3"),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

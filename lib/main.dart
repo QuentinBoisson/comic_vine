@@ -17,7 +17,9 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const DetailsPage(
+      home:
+          //TabBarWidget(),
+          const DetailsPage(
         title: "Agents of S.H.I.E.L.D.",
         titleCardDetails: [
           Text("Marvel"),
