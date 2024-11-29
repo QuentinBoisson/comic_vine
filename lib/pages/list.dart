@@ -8,20 +8,20 @@ class List extends StatelessWidget {
   Widget build(BuildContext context) {
     final double height = MediaQuery.sizeOf(context).height;
 
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: AppColors.screenBackground,
-      ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'Séries les plus regardées',
-            ),
-          ],
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: AppColors.screenBackground,
         ),
-      ),
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const Text(
+                'Séries les plus regardées',
+              ),
+            ],
+        ),
+      )
     );
   }
 }
