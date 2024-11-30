@@ -7,7 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class DetailsPage extends StatefulWidget {
   final String title;
-  final String miniaturePath;
+  final String? miniaturePath;
   final String backgroundImagePath;
   final List<Widget> titleCardDetails;
   final List<Widget> tabs;
@@ -18,7 +18,7 @@ class DetailsPage extends StatefulWidget {
     required this.titleCardDetails,
     required this.tabs,
     required this.backgroundImagePath,
-    required this.miniaturePath,
+    this.miniaturePath,
   });
 
   @override
@@ -59,49 +59,71 @@ class _DetailsPageState extends State<DetailsPage> {
                 child: Container(color: Colors.black.withOpacity(0.3)),
               ),
             ),
-            Container(
-              margin: const EdgeInsetsDirectional.only(
-                top: 75,
-                start: 16,
-                end: 16,
-              ),
-              height: 175,
-              child: Row(
-                children: [
-                  ClipRRect(
-                    borderRadius: const BorderRadius.all(
-                      Radius.circular(10),
-                    ),
-                    child: Image.asset(
-                      widget.miniaturePath,
-                      fit: BoxFit.cover,
-                      width: 95,
-                      height: 127,
-                    ),
+            Column(
+              children: [
+                Container(
+                  margin: const EdgeInsetsDirectional.only(
+                    top: 75,
+                    start: 16,
+                    end: 16,
                   ),
-                  const SizedBox(
-                    width: 15,
+                  padding: const EdgeInsetsDirectional.symmetric(
+                    vertical: 15,
                   ),
-                  Column(
-                    mainAxisSize: MainAxisSize.max,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: widget.titleCardDetails,
-                  )
-                ],
-              ),
-            ),
-            Positioned.fill(
-              child: Container(
-                margin: const EdgeInsetsDirectional.only(
-                  top: 250,
+                  child: (widget.miniaturePath != null &&
+                          widget.titleCardDetails.length > 0)
+                      ? DetailsHeader(
+                          miniaturePath: widget.miniaturePath!,
+                          titleCardDetails: widget.titleCardDetails,
+                        )
+                      : null,
                 ),
-                child: DetailsTabs(tabs: widget.tabs),
-              ),
+                Positioned.fill(
+                  child: DetailsTabs(tabs: widget.tabs),
+                ),
+              ],
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class DetailsHeader extends StatelessWidget {
+  final String miniaturePath;
+  final List<Widget> titleCardDetails;
+  const DetailsHeader({
+    super.key,
+    required this.miniaturePath,
+    required this.titleCardDetails,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        ClipRRect(
+          borderRadius: const BorderRadius.all(
+            Radius.circular(10),
+          ),
+          child: Image.asset(
+            miniaturePath,
+            fit: BoxFit.cover,
+            width: 95,
+            height: 127,
+          ),
+        ),
+        const SizedBox(
+          width: 15,
+        ),
+        Column(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: titleCardDetails,
+        )
+      ],
     );
   }
 }
@@ -232,14 +254,112 @@ class TitleCardDetails extends StatelessWidget {
   }
 }
 
+class Character {
+  final String name;
+  final String imgPath;
+  final List<String>? roles;
+
+  Character({
+    required this.name,
+    required this.imgPath,
+    this.roles,
+  });
+}
+
+class CharacterListTab extends StatelessWidget {
+  final List<Character> characterList;
+  const CharacterListTab({
+    required this.characterList,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        ...characterList.map(
+          (Character character) => CharacterListElement(
+            characterName: character.name,
+            imagePath: character.imgPath,
+            characterRoles: character.roles,
+          ),
+        )
+      ],
+    );
+  }
+}
+
+class CharacterListElement extends StatelessWidget {
+  final String imagePath;
+  final String characterName;
+  final List<String>? characterRoles;
+  const CharacterListElement({
+    super.key,
+    required this.imagePath,
+    required this.characterName,
+    this.characterRoles,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        children: [
+          CircleAvatar(
+            radius: 22,
+            backgroundImage: NetworkImage(
+              imagePath,
+            ),
+          ),
+          const SizedBox(
+            width: 18,
+          ),
+          Column(
+            children: characterRoles != null
+                ? [
+                    Text(
+                      characterName,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Text(
+                      characterRoles!.join(', '),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 17,
+                        fontStyle: FontStyle.italic,
+                      ),
+                    ),
+                  ]
+                : [
+                    Text(
+                      characterName,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 17,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+          )
+        ],
+      ),
+    );
+  }
+}
+
 class ExampleDetailsPage extends StatelessWidget {
   const ExampleDetailsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const DetailsPage(
+    return DetailsPage(
       title: "Agents of S.H.I.E.L.D.",
-      titleCardDetails: [
+      titleCardDetails: const [
         TitleCardDetails(
           iconPath: AppVectorialImages.icPublisherBicolor,
           text: 'Marvel',
@@ -254,7 +374,7 @@ class ExampleDetailsPage extends StatelessWidget {
         ),
       ],
       tabs: [
-        Column(
+        const Column(
           children: [
             Text(
               "The missions of the Strategic Homeland Intervention, Enforcement and Logistics Division. A small team of operatives led by Agent Coulson (Clark Gregg) who must deal with the strange new world of \"superheroes\" after the \"Battle of New York\", protecting the public from new and unknown threats.",
@@ -273,8 +393,32 @@ class ExampleDetailsPage extends StatelessWidget {
             Text("Histoire de la série", style: TextStyle(color: Colors.white)),
           ],
         ),
-        Text("Personnages de la série", style: TextStyle(color: Colors.white)),
-        Text("Episodes de la série", style: TextStyle(color: Colors.white)),
+        CharacterListTab(
+          characterList: [
+            Character(
+              name: 'Jemma Simmons',
+              imgPath:
+                  'https://comicvine.gamespot.com/a/uploads/scale_medium/7/79073/4998056-jemma%20simmons%20%28earth-616%29%20002.jpg',
+            ),
+            Character(
+              name: 'Jemma Simmons',
+              imgPath:
+                  'https://comicvine.gamespot.com/a/uploads/scale_medium/7/79073/4998056-jemma%20simmons%20%28earth-616%29%20002.jpg',
+            ),
+            Character(
+              name: 'Jemma Simmons',
+              imgPath:
+                  'https://comicvine.gamespot.com/a/uploads/scale_medium/7/79073/4998056-jemma%20simmons%20%28earth-616%29%20002.jpg',
+            ),
+            Character(
+                name: 'Jemma Simmons',
+                imgPath:
+                    'https://comicvine.gamespot.com/a/uploads/scale_medium/7/79073/4998056-jemma%20simmons%20%28earth-616%29%20002.jpg',
+                roles: ['Auteur', 'Scénariste']),
+          ],
+        ),
+        const Text("Episodes de la série",
+            style: TextStyle(color: Colors.white)),
       ],
       backgroundImagePath: AppImages.agentsOfShieldBackground,
       miniaturePath: AppImages.agentsOfShieldMini,
