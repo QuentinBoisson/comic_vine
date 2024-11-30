@@ -4,6 +4,9 @@ import 'package:comic_vine/assets/app_colors.dart';
 import 'package:comic_vine/assets/resources.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 
 class DetailsPage extends StatefulWidget {
   final String title;
@@ -90,6 +93,7 @@ class _DetailsPageState extends State<DetailsPage> {
   }
 }
 
+//HEADER
 class DetailsHeader extends StatelessWidget {
   final String miniaturePath;
   final List<Widget> titleCardDetails;
@@ -128,6 +132,44 @@ class DetailsHeader extends StatelessWidget {
   }
 }
 
+class TitleCardDetails extends StatelessWidget {
+  final String iconPath;
+  final String text;
+  const TitleCardDetails({
+    super.key,
+    required this.iconPath,
+    required this.text,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SvgPicture.asset(
+            iconPath,
+            width: 20,
+            colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcATop),
+          ),
+          SizedBox(
+            width: 5,
+          ),
+          Text(
+            text,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+//TABS
 class DetailsTabs extends StatefulWidget {
   final List<Widget> tabs;
 
@@ -180,7 +222,7 @@ class DetailsTabContainer extends StatelessWidget {
         borderRadius: BorderRadiusDirectional.vertical(
           top: Radius.circular(20),
         ),
-        color: AppColors.screenBackground,
+        color: AppColors.cardBackground,
       ),
       child: SingleChildScrollView(child: child),
     );
@@ -217,43 +259,24 @@ class DetailsTabBar extends StatelessWidget {
   }
 }
 
-class TitleCardDetails extends StatelessWidget {
-  final String iconPath;
-  final String text;
-  const TitleCardDetails({
+//STORY TAB
+class StoryTab extends StatelessWidget {
+  final String htmlStoryContent;
+  const StoryTab({
     super.key,
-    required this.iconPath,
-    required this.text,
+    required this.htmlStoryContent,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 5),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SvgPicture.asset(
-            iconPath,
-            width: 20,
-            colorFilter: ColorFilter.mode(Colors.white, BlendMode.srcATop),
-          ),
-          SizedBox(
-            width: 5,
-          ),
-          Text(
-            text,
-            style: TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-            ),
-          )
-        ],
-      ),
+    return HtmlWidget(
+      htmlStoryContent,
+      textStyle: const TextStyle(color: Colors.white),
     );
   }
 }
 
+//CHARACTER TAB
 class Character {
   final String name;
   final String imgPath;
@@ -352,6 +375,211 @@ class CharacterListElement extends StatelessWidget {
   }
 }
 
+class Episode {
+  final String thumbnailPath;
+  final int number;
+  final String title;
+  final DateTime diffusionDate;
+
+  const Episode({
+    required this.thumbnailPath,
+    required this.number,
+    required this.title,
+    required this.diffusionDate,
+  });
+}
+
+//EPISODES TAB
+class EpisodeListTab extends StatelessWidget {
+  final List<Episode> episodeList;
+  const EpisodeListTab({
+    required this.episodeList,
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        ...episodeList.map(
+          (Episode episode) => EpisodeListElement(episode: episode),
+        ),
+      ],
+    );
+  }
+}
+
+class EpisodeListElement extends StatefulWidget {
+  final Episode episode;
+  const EpisodeListElement({super.key, required this.episode});
+
+  @override
+  State<EpisodeListElement> createState() => _EpisodeListElementState();
+}
+
+class _EpisodeListElementState extends State<EpisodeListElement> {
+  @override
+  void initState() {
+    super.initState();
+    initializeDateFormatting('fr_FR').then((_) => setState(() {}));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(13),
+      margin: const EdgeInsets.only(
+        bottom: 15,
+      ),
+      decoration: const BoxDecoration(
+        color: AppColors.cardElementBackground,
+        borderRadius: BorderRadius.all(
+          Radius.circular(10),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        children: [
+          ClipRRect(
+            borderRadius: const BorderRadius.all(
+              Radius.circular(10),
+            ),
+            child: Image.network(
+              widget.episode.thumbnailPath,
+              fit: BoxFit.cover,
+              width: 126,
+              height: 105,
+            ),
+          ),
+          const SizedBox(width: 20),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                "Episode #${widget.episode.number}",
+                style: const TextStyle(
+                  fontSize: 17,
+                  color: Colors.white,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              Text(
+                widget.episode.title,
+                style: const TextStyle(
+                  fontSize: 15,
+                  color: Colors.white,
+                  fontStyle: FontStyle.italic,
+                ),
+              ),
+              SizedBox(height: 18),
+              Row(
+                children: [
+                  SvgPicture.asset(
+                    AppVectorialImages.icCalendarBicolor,
+                    width: 14,
+                    colorFilter: const ColorFilter.mode(
+                        Colors.black12, BlendMode.srcATop),
+                  ),
+                  const SizedBox(
+                    width: 7,
+                  ),
+                  Text(
+                    DateFormat.yMMMMd("fr_FR")
+                        .format(widget.episode.diffusionDate),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 11,
+                    ),
+                  )
+                ],
+              )
+            ],
+          )
+        ],
+      ),
+    );
+  }
+}
+
+//INFO TAB
+class InfoTabElement {
+  final String fieldName;
+  final List<String> fields;
+
+  InfoTabElement({
+    required this.fieldName,
+    required this.fields,
+  });
+}
+
+class InfoListTab extends StatelessWidget {
+  final List<InfoTabElement> infoTabElements;
+  const InfoListTab({
+    super.key,
+    required this.infoTabElements,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        ...infoTabElements.map(
+          (element) => Container(
+            margin: const EdgeInsets.only(bottom: 20),
+            child: InfoListElement(infoTabElement: element),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class InfoListElement extends StatelessWidget {
+  final InfoTabElement infoTabElement;
+  const InfoListElement({
+    super.key,
+    required this.infoTabElement,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          flex: 1,
+          child: Text(
+            infoTabElement.fieldName,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 17,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ),
+        Expanded(
+          flex: 1,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ...infoTabElement.fields.map(
+                (field) => Text(
+                  field,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 17,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+//TESTING PAGE
 class ExampleDetailsPage extends StatelessWidget {
   const ExampleDetailsPage({super.key});
 
@@ -374,6 +602,22 @@ class ExampleDetailsPage extends StatelessWidget {
         ),
       ],
       tabs: [
+        StoryTab(
+          htmlStoryContent:
+              "The missions of the Strategic Homeland Intervention, Enforcement and Logistics Division. A small team of operatives led by Agent Coulson (Clark Gregg) who must deal with the strange new world of \"superheroes\" after the \"Battle of New York\", protecting the public from new and unknown threats.",
+        ),
+        /**
+        //INFO
+        InfoListTab(infoTabElements: [
+          InfoTabElement(fieldName: 'Testing 123', fields: ['Je suis un test']),
+          InfoTabElement(fieldName: 'Testing 456', fields: ['Tu es un test']),
+          InfoTabElement(
+              fieldName: 'Plein de lignes',
+              fields: ['Plusieurs Lignes', 'Se Succèdent', 'Ici !']),
+        ]),
+            **/
+        /**
+         //STORY
         const Column(
           children: [
             Text(
@@ -392,7 +636,9 @@ class ExampleDetailsPage extends StatelessWidget {
             Text("Histoire de la série", style: TextStyle(color: Colors.white)),
             Text("Histoire de la série", style: TextStyle(color: Colors.white)),
           ],
+
         ),
+       **/
         CharacterListTab(
           characterList: [
             Character(
@@ -417,8 +663,29 @@ class ExampleDetailsPage extends StatelessWidget {
                 roles: ['Auteur', 'Scénariste']),
           ],
         ),
-        const Text("Episodes de la série",
-            style: TextStyle(color: Colors.white)),
+        EpisodeListTab(episodeList: [
+          Episode(
+            thumbnailPath:
+                'https://resizing.flixster.com/UGyndR8ESoeoSWpSaMETbV8U96M=/fit-in/352x330/v2/https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/p9975635_b_h9_aa.jpg',
+            number: 101,
+            title: 'Le pilote',
+            diffusionDate: DateTime(2013, DateTime.september, 23),
+          ),
+          Episode(
+            thumbnailPath:
+                'https://resizing.flixster.com/UGyndR8ESoeoSWpSaMETbV8U96M=/fit-in/352x330/v2/https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/p9975635_b_h9_aa.jpg',
+            number: 102,
+            title: 'Le pilote',
+            diffusionDate: DateTime(2013, DateTime.september, 23),
+          ),
+          Episode(
+            thumbnailPath:
+                'https://resizing.flixster.com/UGyndR8ESoeoSWpSaMETbV8U96M=/fit-in/352x330/v2/https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/p9975635_b_h9_aa.jpg',
+            number: 103,
+            title: 'Le pilote',
+            diffusionDate: DateTime(2013, DateTime.september, 23),
+          ),
+        ])
       ],
       backgroundImagePath: AppImages.agentsOfShieldBackground,
       miniaturePath: AppImages.agentsOfShieldMini,
