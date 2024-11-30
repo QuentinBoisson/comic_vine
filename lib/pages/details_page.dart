@@ -81,7 +81,7 @@ class _DetailsPageState extends State<DetailsPage> {
                         )
                       : null,
                 ),
-                Positioned.fill(
+                Expanded(
                   child: DetailsTabs(tabs: widget.tabs),
                 ),
               ],
@@ -122,6 +122,7 @@ class DetailsHeader extends StatelessWidget {
           width: 15,
         ),
         Column(
+          //TODO Implement comics title here
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -547,7 +548,6 @@ class InfoListElement extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
-          flex: 1,
           child: Text(
             infoTabElement.fieldName,
             style: const TextStyle(
@@ -558,7 +558,6 @@ class InfoListElement extends StatelessWidget {
           ),
         ),
         Expanded(
-          flex: 1,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
