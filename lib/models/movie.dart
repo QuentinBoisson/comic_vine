@@ -13,7 +13,7 @@ class Movie {
   final int? budget;
   final int? boxOfficeRevenue;
   final int? totalRevenue;
-  final String? coverUrl;
+  final String? thumbnailUrl;
   final String? backgroundUrl;
 
   Movie({
@@ -29,7 +29,7 @@ class Movie {
     this.budget,
     this.boxOfficeRevenue,
     this.totalRevenue,
-    this.coverUrl,
+    this.thumbnailUrl,
     this.backgroundUrl,
   });
 }

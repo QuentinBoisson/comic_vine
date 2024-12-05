@@ -9,7 +9,7 @@ class ComicBook {
   final String? story;
   final List<Author>? authors;
   final List<Character>? characters;
-  final String? coverUrl;
+  final String? thumbnailUrl;
   final String? backgroundUrl;
 
   ComicBook({
@@ -20,7 +20,7 @@ class ComicBook {
     this.releaseDate,
     this.characters,
     this.authors,
-    this.coverUrl,
+    this.thumbnailUrl,
     this.backgroundUrl,
   });
 }
