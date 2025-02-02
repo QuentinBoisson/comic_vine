@@ -1,5 +1,6 @@
 import 'package:comic_vine/api/models/common/image_data_api.dart';
 import 'package:comic_vine/api/models/common/named_entity_api.dart';
+import 'package:comic_vine/models/comic_book.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'comic_book_api.g.dart';
@@ -52,4 +53,16 @@ class ComicBookDetailResponse {
       _$ComicBookDetailResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$ComicBookDetailResponseToJson(this);
+
+  ComicBook generateComicBook() => ComicBook(
+        story: story,
+        backgroundUrl: imageUrls?.backgroundUrl,
+        authorIdList: authors?.map((creatorInfo) => creatorInfo.id).toList(),
+        characterIdList: characters?.map((character) => character.id).toList(),
+        issueName: issueName,
+        issueNumber: issueNumber,
+        releaseDate: releaseDate,
+        thumbnailUrl: imageUrls?.thumbnailUrl,
+        volumeName: volume?.name,
+      );
 }

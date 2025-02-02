@@ -1,11 +1,9 @@
-import 'package:comic_vine/models/character.dart';
-
 class Movie {
   final String? title;
   final String? story;
   final int? runtime;
   final DateTime? releaseDate;
-  final List<Character>? characters;
+  final List<int>? characterIdList;
   final String? classification;
   final List<String>? screenwriters;
   final List<String>? producers;
@@ -21,7 +19,7 @@ class Movie {
     this.story,
     this.runtime,
     this.releaseDate,
-    this.characters,
+    this.characterIdList,
     this.classification,
     this.screenwriters,
     this.producers,

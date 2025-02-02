@@ -1,14 +1,11 @@
-import 'package:comic_vine/models/character.dart';
-import 'package:comic_vine/models/episode.dart';
-
 class Series {
   final String? title;
   final String? publisher;
   final int? episodeCount;
   final DateTime? releaseDate;
   final String? story;
-  final List<Character>? characters;
-  final List<Episode>? episodes;
+  final List<int>? characterIdList;
+  final List<int>? episodeIdList;
   final String? thumbnailUrl;
   final String? backgroundUrl;
 
@@ -18,8 +15,8 @@ class Series {
     this.episodeCount,
     this.releaseDate,
     this.story,
-    this.characters,
-    this.episodes,
+    this.characterIdList,
+    this.episodeIdList,
     this.thumbnailUrl,
     this.backgroundUrl,
   });

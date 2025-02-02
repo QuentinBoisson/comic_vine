@@ -1,4 +1,5 @@
 import 'package:comic_vine/api/models/common/image_data_api.dart';
+import 'package:comic_vine/models/author.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'author_api.g.dart';
@@ -33,4 +34,7 @@ class AuthorDetailResponse {
       _$AuthorDetailResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$AuthorDetailResponseToJson(this);
+
+  Author generateAuthor() =>
+      Author(name: name, iconUrl: imageUrls?.iconUrl, role: role);
 }

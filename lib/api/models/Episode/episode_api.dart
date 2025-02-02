@@ -1,4 +1,5 @@
 import 'package:comic_vine/api/models/common/image_data_api.dart';
+import 'package:comic_vine/models/episode.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'episode_api.g.dart';
@@ -16,6 +17,21 @@ class EpisodeDetailServerResponse {
       _$EpisodeDetailServerResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$EpisodeDetailServerResponseToJson(this);
+}
+
+@JsonSerializable()
+class EpisodeListServerResponse {
+  @JsonKey(name: 'results')
+  final List<EpisodeDetailResponse> response;
+  @JsonKey(name: 'error')
+  final dynamic error;
+
+  EpisodeListServerResponse(this.response, this.error);
+
+  factory EpisodeListServerResponse.fromJson(Map<String, dynamic> json) =>
+      _$EpisodeListServerResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$EpisodeListServerResponseToJson(this);
 }
 
 @JsonSerializable()
@@ -40,4 +56,11 @@ class EpisodeDetailResponse {
       _$EpisodeDetailResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$EpisodeDetailResponseToJson(this);
+
+  Episode generateEpisode() => Episode(
+        releaseDate: releaseDate,
+        imageUrl: imageUrls?.thumbnailUrl,
+        title: title,
+        episodeNumber: episodeNumber,
+      );
 }

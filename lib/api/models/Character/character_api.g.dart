@@ -20,6 +20,23 @@ Map<String, dynamic> _$CharacterDetailServerResponseToJson(
       'error': instance.error,
     };
 
+CharacterListServerResponse _$CharacterListServerResponseFromJson(
+        Map<String, dynamic> json) =>
+    CharacterListServerResponse(
+      (json['results'] as List<dynamic>)
+          .map((e) =>
+              CharacterDetailResponse.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      json['error'],
+    );
+
+Map<String, dynamic> _$CharacterListServerResponseToJson(
+        CharacterListServerResponse instance) =>
+    <String, dynamic>{
+      'results': instance.response,
+      'error': instance.error,
+    };
+
 CharacterDetailResponse _$CharacterDetailResponseFromJson(
         Map<String, dynamic> json) =>
     CharacterDetailResponse(

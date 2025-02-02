@@ -1,5 +1,6 @@
 import 'package:comic_vine/api/models/common/image_data_api.dart';
 import 'package:comic_vine/api/models/common/named_entity_api.dart';
+import 'package:comic_vine/models/character.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'character_api.g.dart';
@@ -17,6 +18,21 @@ class CharacterDetailServerResponse {
       _$CharacterDetailServerResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$CharacterDetailServerResponseToJson(this);
+}
+
+@JsonSerializable()
+class CharacterListServerResponse {
+  @JsonKey(name: 'results')
+  final List<CharacterDetailResponse> response;
+  @JsonKey(name: 'error')
+  final dynamic error;
+
+  CharacterListServerResponse(this.response, this.error);
+
+  factory CharacterListServerResponse.fromJson(Map<String, dynamic> json) =>
+      _$CharacterListServerResponseFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CharacterListServerResponseToJson(this);
 }
 
 @JsonSerializable()
@@ -56,4 +72,17 @@ class CharacterDetailResponse {
       _$CharacterDetailResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$CharacterDetailResponseToJson(this);
+  Character generateCharacter() => Character(
+        story: story,
+        iconUrl: imageUrls?.iconUrl,
+        name: name,
+        aliases: aliases,
+        backgroundUrl: imageUrls?.backgroundUrl,
+        birthDate: birthDate,
+        creators:
+            creators?.map((creatorInfo) => creatorInfo.name ?? '').toList(),
+        gender: gender,
+        publisher: publisher?.name,
+        realName: realName,
+      );
 }

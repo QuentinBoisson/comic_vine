@@ -1,5 +1,6 @@
 import 'package:comic_vine/api/models/common/image_data_api.dart';
 import 'package:comic_vine/api/models/common/named_entity_api.dart';
+import 'package:comic_vine/models/movie.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'movie_api.g.dart';
@@ -70,4 +71,23 @@ class MovieDetailResponse {
       _$MovieDetailResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$MovieDetailResponseToJson(this);
+
+  Movie generateMovie() => Movie(
+        story: story,
+        thumbnailUrl: imageUrls?.thumbnailUrl,
+        title: title,
+        releaseDate: releaseDate,
+        backgroundUrl: imageUrls?.backgroundUrl,
+        runtime: runtime,
+        producers:
+            producers?.map((creatorInfo) => creatorInfo.name ?? '').toList(),
+        screenwriters:
+            writers?.map((creatorInfo) => creatorInfo.name ?? '').toList(),
+        studios: studios?.map((creatorInfo) => creatorInfo.name ?? '').toList(),
+        characterIdList: characters?.map((character) => character.id).toList(),
+        boxOfficeRevenue: boxOfficeRevenue,
+        budget: budget,
+        classification: rating,
+        totalRevenue: boxOfficeRevenue,
+      );
 }
