@@ -16,7 +16,7 @@ abstract class OFFAPI {
 //Getting lists of entities
   @GET("/episodes/")
   Future<EpisodeListServerResponse?> loadEpisodesList(
-    @Path('seriesId') String seriesId,
+    @Path('filter') String filter,
     @Query('api_key') String apiKey,
     @Query('format') String format,
   );
@@ -44,7 +44,7 @@ abstract class OFFAPI {
   );
 
   @GET("/series/4075-{seriesId}/")
-  Future<SeriesDetailServerResponse?> getSerieById(
+  Future<SeriesDetailServerResponse?> getSeriesById(
       @Path("seriesId") String seriesId,
       @Query("api_key") String apiKey,
       @Query("format") String format);
@@ -83,9 +83,9 @@ class OFFAPIManager {
             )),
             baseUrl: "https://comicvine.gamespot.com/api");
 
-  Future<EpisodeListServerResponse?> getEpisodeList(String id) async {
+  Future<EpisodeListServerResponse?> getEpisodeList(String seriesId) async {
     try {
-      return await api.loadEpisodesList(id, _apiKey, "json");
+      return await api.loadEpisodesList("series:${seriesId}", _apiKey, "json");
     } catch (e) {
       print("Erreur à la récupération des épisodes : $e");
       return null;
@@ -123,7 +123,7 @@ class OFFAPIManager {
 
   Future<SeriesDetailServerResponse?> getSeriesById(String seriesId) async {
     try {
-      return await api.getSerieById(seriesId, _apiKey, "json");
+      return await api.getSeriesById(seriesId, _apiKey, "json");
     } catch (e) {
       print("Erreur à la récupération de la série : $e");
       return null;

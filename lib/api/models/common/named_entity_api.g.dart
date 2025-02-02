@@ -7,7 +7,7 @@ part of 'named_entity_api.dart';
 // **************************************************************************
 
 NamedEntity _$NamedEntityFromJson(Map<String, dynamic> json) => NamedEntity(
-      (json['id'] as num).toInt(),
+      json['id'] as String,
       json['name'] as String?,
     );
 

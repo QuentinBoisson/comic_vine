@@ -5,7 +5,7 @@ part 'named_entity_api.g.dart';
 @JsonSerializable()
 class NamedEntity {
   @JsonKey(name: 'id')
-  final int id;
+  final String id;
   @JsonKey(name: 'name')
   final String? name;
 

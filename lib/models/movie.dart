@@ -3,7 +3,7 @@ class Movie {
   final String? story;
   final int? runtime;
   final DateTime? releaseDate;
-  final List<int>? characterIdList;
+  final List<String>? characterIdList;
   final String? classification;
   final List<String>? screenwriters;
   final List<String>? producers;

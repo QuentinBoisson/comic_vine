@@ -21,7 +21,7 @@ class _OFFAPI implements OFFAPI {
 
   @override
   Future<EpisodeListServerResponse?> loadEpisodesList(
-    String seriesId,
+    String filter,
     String apiKey,
     String format,
   ) async {
@@ -165,7 +165,7 @@ class _OFFAPI implements OFFAPI {
   }
 
   @override
-  Future<SeriesDetailServerResponse?> getSerieById(
+  Future<SeriesDetailServerResponse?> getSeriesById(
     String seriesId,
     String apiKey,
     String format,

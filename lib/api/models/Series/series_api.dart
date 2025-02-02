@@ -22,6 +22,8 @@ class SeriesDetailServerResponse {
 
 @JsonSerializable()
 class SeriesDetailResponse {
+  @JsonKey(name: 'id')
+  final String? id;
   @JsonKey(name: 'name')
   final String? title;
   @JsonKey(name: 'publisher')
@@ -40,6 +42,7 @@ class SeriesDetailResponse {
   final ImageData? imageUrls;
 
   SeriesDetailResponse(
+    this.id,
     this.title,
     this.publisher,
     this.episodeCount,
@@ -56,6 +59,7 @@ class SeriesDetailResponse {
   Map<String, dynamic> toJson() => _$SeriesDetailResponseToJson(this);
 
   Series generateSeries() => Series(
+        id: id,
         story: story,
         thumbnailUrl: imageUrls?.thumbnailUrl,
         title: title,

@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         fontFamily: 'Nunito',
       ),
-      home: const ExampleDetailsPage(),
+      home: const MovieDetailsPage(movieId: '1'),
     );
   }
 }

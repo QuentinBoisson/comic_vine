@@ -2,7 +2,15 @@ import 'dart:ui';
 
 import 'package:comic_vine/assets/app_colors.dart';
 import 'package:comic_vine/assets/resources.dart';
+import 'package:comic_vine/models/episode.dart';
+import 'package:comic_vine/pages/bloc/author_details_bloc.dart';
+import 'package:comic_vine/pages/bloc/character_details_bloc.dart';
+import 'package:comic_vine/pages/bloc/comic_book_details_bloc.dart';
+import 'package:comic_vine/pages/bloc/episode_list_bloc.dart';
+import 'package:comic_vine/pages/bloc/movie_details_bloc.dart';
+import 'package:comic_vine/pages/bloc/series_details_bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:intl/date_symbol_data_local.dart';
@@ -291,9 +299,11 @@ class Character {
 }
 
 class CharacterListTab extends StatelessWidget {
-  final List<Character> characterList;
+  final List<String> characterIdList;
+  final bool isForAuthors;
   const CharacterListTab({
-    required this.characterList,
+    required this.characterIdList,
+    required this.isForAuthors,
     super.key,
   });
 
@@ -301,12 +311,8 @@ class CharacterListTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        ...characterList.map(
-          (Character character) => CharacterListElement(
-            characterName: character.name,
-            imagePath: character.imgPath,
-            characterRoles: character.roles,
-          ),
+        ...characterIdList.map(
+          (characterId) => CharacterListElement(characterId: characterId),
         )
       ],
     );
@@ -314,36 +320,92 @@ class CharacterListTab extends StatelessWidget {
 }
 
 class CharacterListElement extends StatelessWidget {
-  final String imagePath;
-  final String characterName;
-  final List<String>? characterRoles;
+  final String characterId;
   const CharacterListElement({
     super.key,
-    required this.imagePath,
-    required this.characterName,
-    this.characterRoles,
+    required this.characterId,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        children: [
-          CircleAvatar(
-            radius: 22,
-            backgroundImage: NetworkImage(
-              imagePath,
-            ),
-          ),
-          const SizedBox(
-            width: 18,
-          ),
-          Column(
-            children: characterRoles != null
-                ? [
+    return BlocProvider(
+      create: (context) => CharacterDetailsBloc(characterId),
+      child: BlocBuilder<CharacterDetailsBloc, CharacterDetailsState>(
+        builder: (context, state) {
+          if (state is CharacterDetailsNotifierLoadingState) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is CharacterDetailsNotifierSuccessState) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 22,
+                    backgroundImage: NetworkImage(
+                      state.character?.iconUrl ?? '',
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 18,
+                  ),
+                  Column(
+                    children: [
+                      Text(
+                        state.character?.name ?? '',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 17,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            );
+          } else if (state is CharacterDetailsNotifierErrorState) {
+            return const Center(child: CircularProgressIndicator());
+          } else {
+            return const Center(child: Text('Aucune donnée disponible.'));
+          }
+        },
+      ),
+    );
+  }
+}
+
+class AuthorListElement extends StatelessWidget {
+  final String authorId;
+  const AuthorListElement({
+    super.key,
+    required this.authorId,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => AuthorDetailsBloc(authorId),
+      child: BlocBuilder<AuthorDetailsBloc, AuthorDetailsState>(
+        builder: (context, state) {
+          if (state is AuthorDetailsNotifierLoadingState) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is AuthorDetailsNotifierSuccessState) {
+            return Padding(
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 22,
+                    backgroundImage: NetworkImage(
+                      state.author?.iconUrl ?? '',
+                    ),
+                  ),
+                  const SizedBox(
+                    width: 18,
+                  ),
+                  Column(children: [
                     Text(
-                      characterName,
+                      state.author?.name ?? '',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 17,
@@ -351,61 +413,65 @@ class CharacterListElement extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      characterRoles!.join(', '),
+                      state.author?.role ?? '',
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 17,
                         fontStyle: FontStyle.italic,
                       ),
                     ),
-                  ]
-                : [
-                    Text(
-                      characterName,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 17,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-          )
-        ],
+                  ])
+                ],
+              ),
+            );
+          } else if (state is AuthorDetailsNotifierErrorState) {
+            return const Center(child: CircularProgressIndicator());
+          } else {
+            return const Center(child: Text('Aucune donnée disponible.'));
+          }
+        },
       ),
     );
   }
 }
 
-class Episode {
-  final String thumbnailPath;
-  final int number;
-  final String title;
-  final DateTime diffusionDate;
-
-  const Episode({
-    required this.thumbnailPath,
-    required this.number,
-    required this.title,
-    required this.diffusionDate,
-  });
-}
-
 //EPISODES TAB
 class EpisodeListTab extends StatelessWidget {
-  final List<Episode> episodeList;
   const EpisodeListTab({
-    required this.episodeList,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        ...episodeList.map(
-          (Episode episode) => EpisodeListElement(episode: episode),
-        ),
-      ],
+    return BlocProvider(
+      create: (context) => EpisodeListBloc(
+          (BlocProvider.of<SeriesDetailsBloc>(context).state
+                      as SeriesDetailsNotifierSuccessState)
+                  .series
+                  ?.id ??
+              ''),
+      child: BlocBuilder<EpisodeListBloc, EpisodeListState>(
+        builder: (context, state) {
+          if (state is EpisodeListNotifierLoadingState) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is EpisodeListNotifierSuccessState) {
+            return Column(
+              children: [
+                ...(BlocProvider.of<EpisodeListBloc>(context).state
+                        as EpisodeListNotifierSuccessState)
+                    .episodeList
+                    .map(
+                      (Episode episode) => EpisodeListElement(episode: episode),
+                    ),
+              ],
+            );
+          } else if (state is EpisodeListNotifierErrorState) {
+            return const Center(child: CircularProgressIndicator());
+          } else {
+            return const Center(child: Text('Aucune donnée disponible.'));
+          }
+        },
+      ),
     );
   }
 }
@@ -446,7 +512,7 @@ class _EpisodeListElementState extends State<EpisodeListElement> {
               Radius.circular(10),
             ),
             child: Image.network(
-              widget.episode.thumbnailPath,
+              widget.episode.imageUrl ?? '',
               fit: BoxFit.cover,
               width: 126,
               height: 105,
@@ -457,7 +523,7 @@ class _EpisodeListElementState extends State<EpisodeListElement> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                "Episode #${widget.episode.number}",
+                "Episode #${widget.episode.episodeNumber}",
                 style: const TextStyle(
                   fontSize: 17,
                   color: Colors.white,
@@ -465,7 +531,7 @@ class _EpisodeListElementState extends State<EpisodeListElement> {
                 ),
               ),
               Text(
-                widget.episode.title,
+                widget.episode.title ?? '???',
                 style: const TextStyle(
                   fontSize: 15,
                   color: Colors.white,
@@ -485,8 +551,10 @@ class _EpisodeListElementState extends State<EpisodeListElement> {
                     width: 7,
                   ),
                   Text(
-                    DateFormat.yMMMMd("fr_FR")
-                        .format(widget.episode.diffusionDate),
+                    widget.episode.releaseDate != null
+                        ? DateFormat.yMMMMd("fr_FR")
+                            .format(widget.episode.releaseDate!)
+                        : '???',
                     style: const TextStyle(
                       color: Colors.white,
                       fontSize: 11,
@@ -578,116 +646,227 @@ class InfoListElement extends StatelessWidget {
   }
 }
 
-//TESTING PAGE
-class ExampleDetailsPage extends StatelessWidget {
-  const ExampleDetailsPage({super.key});
+class MovieDetailsPage extends StatelessWidget {
+  final String movieId;
+  const MovieDetailsPage({super.key, required this.movieId});
 
   @override
   Widget build(BuildContext context) {
-    return DetailsPage(
-      title: "Agents of S.H.I.E.L.D.",
-      titleCardDetails: const [
-        TitleCardDetails(
-          iconPath: AppVectorialImages.icPublisherBicolor,
-          text: 'Marvel',
-        ),
-        TitleCardDetails(
-          iconPath: AppVectorialImages.icTvBicolor,
-          text: '136 épisodes',
-        ),
-        TitleCardDetails(
-          iconPath: AppVectorialImages.icCalendarBicolor,
-          text: '2013',
-        ),
-      ],
-      tabs: [
-        StoryTab(
-          htmlStoryContent:
-              "The missions of the Strategic Homeland Intervention, Enforcement and Logistics Division. A small team of operatives led by Agent Coulson (Clark Gregg) who must deal with the strange new world of \"superheroes\" after the \"Battle of New York\", protecting the public from new and unknown threats.",
-        ),
-        /**
-        //INFO
-        InfoListTab(infoTabElements: [
-          InfoTabElement(fieldName: 'Testing 123', fields: ['Je suis un test']),
-          InfoTabElement(fieldName: 'Testing 456', fields: ['Tu es un test']),
-          InfoTabElement(
-              fieldName: 'Plein de lignes',
-              fields: ['Plusieurs Lignes', 'Se Succèdent', 'Ici !']),
-        ]),
-            **/
-        /**
-         //STORY
-        const Column(
-          children: [
-            Text(
-              "The missions of the Strategic Homeland Intervention, Enforcement and Logistics Division. A small team of operatives led by Agent Coulson (Clark Gregg) who must deal with the strange new world of \"superheroes\" after the \"Battle of New York\", protecting the public from new and unknown threats.",
-              style: TextStyle(color: Colors.white),
-              textAlign: TextAlign.justify,
-            ),
-            SizedBox(
-              height: 400,
-            ),
-            Text("Histoire de la série", style: TextStyle(color: Colors.white)),
-            Text("Histoire de la série", style: TextStyle(color: Colors.white)),
-            Text("Histoire de la série", style: TextStyle(color: Colors.white)),
-            Text("Histoire de la série", style: TextStyle(color: Colors.white)),
-            Text("Histoire de la série", style: TextStyle(color: Colors.white)),
-            Text("Histoire de la série", style: TextStyle(color: Colors.white)),
-            Text("Histoire de la série", style: TextStyle(color: Colors.white)),
-          ],
+    return BlocProvider(
+      create: (context) => MovieDetailsBloc(movieId),
+      child: BlocBuilder<MovieDetailsBloc, MovieDetailsState>(
+        builder: (context, state) {
+          if (state is MovieDetailsNotifierLoadingState) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is MovieDetailsNotifierSuccessState) {
+            return DetailsPage(
+              title: state.movie?.title ?? '',
+              backgroundImagePath: state.movie?.backgroundUrl ?? '',
+              titleCardDetails: [
+                TitleCardDetails(
+                  iconPath: AppVectorialImages.icTvBicolor,
+                  text: "${state.movie?.runtime} minutes",
+                ),
+                TitleCardDetails(
+                  iconPath: AppVectorialImages.icCalendarBicolor,
+                  text: state.movie?.releaseDate?.toString() ?? '???',
+                ),
+              ],
+              tabs: [
+                StoryTab(htmlStoryContent: state.movie?.story ?? ''),
+                CharacterListTab(
+                  characterIdList: state.movie?.characterIdList ?? [],
+                  isForAuthors: false,
+                ),
+                InfoListTab(infoTabElements: [
+                  InfoTabElement(
+                      fieldName: 'Classification',
+                      fields: [state.movie?.classification ?? '???']),
+                  InfoTabElement(
+                      fieldName: 'Scénaristes',
+                      fields: state.movie?.screenwriters ?? ['???']),
+                  InfoTabElement(
+                      fieldName: 'Producteurs',
+                      fields: state.movie?.producers ?? ['???']),
+                  InfoTabElement(
+                      fieldName: 'Studios',
+                      fields: state.movie?.studios ?? ['???']),
+                  InfoTabElement(
+                      fieldName: 'Budget',
+                      fields: ['${state.movie?.budget} \$']),
+                  InfoTabElement(
+                      fieldName: 'Recettes au Box Office',
+                      fields: ['${state.movie?.boxOfficeRevenue} \$']),
+                  InfoTabElement(
+                      fieldName: 'Recettes brutes totales',
+                      fields: ['${state.movie?.totalRevenue} \$']),
+                ]),
+              ],
+              miniaturePath: state.movie?.thumbnailUrl ?? '',
+            );
+          } else if (state is MovieDetailsNotifierErrorState) {
+            return const Center(child: CircularProgressIndicator());
+          } else {
+            return const Center(child: Text('Aucune donnée disponible.'));
+          }
+        },
+      ),
+    );
+  }
+}
 
-        ),
-       **/
-        CharacterListTab(
-          characterList: [
-            Character(
-              name: 'Jemma Simmons',
-              imgPath:
-                  'https://comicvine.gamespot.com/a/uploads/scale_medium/7/79073/4998056-jemma%20simmons%20%28earth-616%29%20002.jpg',
-            ),
-            Character(
-              name: 'Jemma Simmons',
-              imgPath:
-                  'https://comicvine.gamespot.com/a/uploads/scale_medium/7/79073/4998056-jemma%20simmons%20%28earth-616%29%20002.jpg',
-            ),
-            Character(
-              name: 'Jemma Simmons',
-              imgPath:
-                  'https://comicvine.gamespot.com/a/uploads/scale_medium/7/79073/4998056-jemma%20simmons%20%28earth-616%29%20002.jpg',
-            ),
-            Character(
-                name: 'Jemma Simmons',
-                imgPath:
-                    'https://comicvine.gamespot.com/a/uploads/scale_medium/7/79073/4998056-jemma%20simmons%20%28earth-616%29%20002.jpg',
-                roles: ['Auteur', 'Scénariste']),
-          ],
-        ),
-        EpisodeListTab(episodeList: [
-          Episode(
-            thumbnailPath:
-                'https://resizing.flixster.com/UGyndR8ESoeoSWpSaMETbV8U96M=/fit-in/352x330/v2/https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/p9975635_b_h9_aa.jpg',
-            number: 101,
-            title: 'Le pilote',
-            diffusionDate: DateTime(2013, DateTime.september, 23),
-          ),
-          Episode(
-            thumbnailPath:
-                'https://resizing.flixster.com/UGyndR8ESoeoSWpSaMETbV8U96M=/fit-in/352x330/v2/https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/p9975635_b_h9_aa.jpg',
-            number: 102,
-            title: 'Le pilote',
-            diffusionDate: DateTime(2013, DateTime.september, 23),
-          ),
-          Episode(
-            thumbnailPath:
-                'https://resizing.flixster.com/UGyndR8ESoeoSWpSaMETbV8U96M=/fit-in/352x330/v2/https://resizing.flixster.com/-XZAfHZM39UwaGJIFWKAE8fS0ak=/v3/t/assets/p9975635_b_h9_aa.jpg',
-            number: 103,
-            title: 'Le pilote',
-            diffusionDate: DateTime(2013, DateTime.september, 23),
-          ),
-        ])
-      ],
-      backgroundImagePath: AppImages.agentsOfShieldBackground,
-      miniaturePath: AppImages.agentsOfShieldMini,
+class SeriesDetailsPage extends StatelessWidget {
+  final String seriesId;
+  const SeriesDetailsPage({super.key, required this.seriesId});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => SeriesDetailsBloc(seriesId),
+      child: BlocBuilder<SeriesDetailsBloc, SeriesDetailsState>(
+        builder: (context, state) {
+          if (state is SeriesDetailsNotifierLoadingState) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is SeriesDetailsNotifierSuccessState) {
+            return DetailsPage(
+              title: state.series?.title ?? '',
+              backgroundImagePath: state.series?.backgroundUrl ?? '',
+              titleCardDetails: [
+                TitleCardDetails(
+                  iconPath: AppVectorialImages.icPublisherBicolor,
+                  text: state.series?.publisher ?? '???',
+                ),
+                TitleCardDetails(
+                  iconPath: AppVectorialImages.icTvBicolor,
+                  text: "${state.series?.episodeCount} épisodes",
+                ),
+                TitleCardDetails(
+                  iconPath: AppVectorialImages.icCalendarBicolor,
+                  text: state.series?.releaseDate?.toString() ?? '???',
+                ),
+              ],
+              tabs: [
+                StoryTab(htmlStoryContent: state.series?.story ?? ''),
+                CharacterListTab(
+                  characterIdList: state.series?.characterIdList ?? [],
+                  isForAuthors: false,
+                ),
+                EpisodeListTab(),
+              ],
+              miniaturePath: state.series?.thumbnailUrl ?? '',
+            );
+          } else if (state is SeriesDetailsNotifierErrorState) {
+            return const Center(child: CircularProgressIndicator());
+          } else {
+            return const Center(child: Text('Aucune donnée disponible.'));
+          }
+        },
+      ),
+    );
+  }
+}
+
+class ComicBookDetailsPage extends StatelessWidget {
+  final String comicBookId;
+  const ComicBookDetailsPage({super.key, required this.comicBookId});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => ComicBookDetailsBloc(comicBookId),
+      child: BlocBuilder<ComicBookDetailsBloc, ComicBookDetailsState>(
+        builder: (context, state) {
+          if (state is ComicBookDetailsNotifierLoadingState) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is ComicBookDetailsNotifierSuccessState) {
+            return DetailsPage(
+              title: state.comicBook?.issueName ?? '',
+              backgroundImagePath: state.comicBook?.backgroundUrl ?? '',
+              titleCardDetails: [
+                TitleCardDetails(
+                  iconPath: AppVectorialImages.icTvBicolor,
+                  text: "N°${state.comicBook?.issueNumber}",
+                ),
+                TitleCardDetails(
+                  iconPath: AppVectorialImages.icCalendarBicolor,
+                  text: state.comicBook?.releaseDate?.toString() ?? '???',
+                ),
+              ],
+              tabs: [
+                StoryTab(htmlStoryContent: state.comicBook?.story ?? ''),
+                CharacterListTab(
+                  characterIdList: state.comicBook?.authorIdList ?? [],
+                  isForAuthors: true,
+                ),
+                CharacterListTab(
+                  characterIdList: state.comicBook?.characterIdList ?? [],
+                  isForAuthors: false,
+                ),
+              ],
+              miniaturePath: state.comicBook?.thumbnailUrl ?? '',
+            );
+          } else if (state is ComicBookDetailsNotifierErrorState) {
+            return const Center(child: CircularProgressIndicator());
+          } else {
+            return const Center(child: Text('Aucune donnée disponible.'));
+          }
+        },
+      ),
+    );
+  }
+}
+
+class CharacterDetailsPage extends StatelessWidget {
+  final String characterId;
+  const CharacterDetailsPage({super.key, required this.characterId});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => CharacterDetailsBloc(characterId),
+      child: BlocBuilder<CharacterDetailsBloc, CharacterDetailsState>(
+        builder: (context, state) {
+          if (state is CharacterDetailsNotifierLoadingState) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is CharacterDetailsNotifierSuccessState) {
+            return DetailsPage(
+              title: state.character?.name ?? '',
+              backgroundImagePath: state.character?.backgroundUrl ?? '',
+              titleCardDetails: [],
+              tabs: [
+                StoryTab(htmlStoryContent: state.character?.story ?? ''),
+                InfoListTab(infoTabElements: [
+                  InfoTabElement(
+                      fieldName: 'Nom de super héros',
+                      fields: [state.character?.name ?? '???']),
+                  InfoTabElement(
+                      fieldName: 'Nom réel',
+                      fields: [state.character?.realName ?? '???']),
+                  InfoTabElement(
+                      fieldName: 'Alias',
+                      fields: [state.character?.aliases ?? '???']),
+                  InfoTabElement(
+                      fieldName: 'Editeur',
+                      fields: [state.character?.publisher ?? '???']),
+                  InfoTabElement(
+                      fieldName: 'Créateurs',
+                      fields: state.character?.creators ?? ['???']),
+                  InfoTabElement(fieldName: 'Genre', fields: [
+                    state.character?.gender == 1 ? "Masculin" : 'Feminin'
+                  ]),
+                  InfoTabElement(fieldName: 'Date de naissance', fields: [
+                    state.character?.birthDate?.toString() ?? '???'
+                  ]),
+                ]),
+              ],
+            );
+          } else if (state is CharacterDetailsNotifierErrorState) {
+            return const Center(child: CircularProgressIndicator());
+          } else {
+            return const Center(child: Text('Aucune donnée disponible.'));
+          }
+        },
+      ),
     );
   }
 }

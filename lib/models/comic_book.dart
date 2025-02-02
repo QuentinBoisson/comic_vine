@@ -4,8 +4,8 @@ class ComicBook {
   final int? issueNumber;
   final DateTime? releaseDate;
   final String? story;
-  final List<int>? authorIdList;
-  final List<int>? characterIdList;
+  final List<String>? authorIdList;
+  final List<String>? characterIdList;
   final String? thumbnailUrl;
   final String? backgroundUrl;
 

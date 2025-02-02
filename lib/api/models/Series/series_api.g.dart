@@ -23,6 +23,7 @@ Map<String, dynamic> _$SeriesDetailServerResponseToJson(
 SeriesDetailResponse _$SeriesDetailResponseFromJson(
         Map<String, dynamic> json) =>
     SeriesDetailResponse(
+      json['id'] as String?,
       json['name'] as String?,
       json['publisher'] == null
           ? null
@@ -46,6 +47,7 @@ SeriesDetailResponse _$SeriesDetailResponseFromJson(
 Map<String, dynamic> _$SeriesDetailResponseToJson(
         SeriesDetailResponse instance) =>
     <String, dynamic>{
+      'id': instance.id,
       'name': instance.title,
       'publisher': instance.publisher,
       'count_of_episodes': instance.episodeCount,

@@ -36,9 +36,9 @@ sealed class EpisodeListState {}
 class EpisodeListNotifierLoadingState extends EpisodeListState {}
 
 class EpisodeListNotifierSuccessState extends EpisodeListState {
-  final List<Episode> response;
+  final List<Episode> episodeList;
 
-  EpisodeListNotifierSuccessState(this.response);
+  EpisodeListNotifierSuccessState(this.episodeList);
 }
 
 class EpisodeListNotifierErrorState extends EpisodeListState {
