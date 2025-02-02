@@ -51,7 +51,7 @@ class _ListeState extends State<Liste> {
     }
   }
 
-  //Permet de récupérer les bonnes données selon l'appel API
+  //Permet d'afficher les bonnes données selon l'appel API
   Widget _buildDetails(dynamic item) {
     if (widget.type == 'Comics') {
       return Column(

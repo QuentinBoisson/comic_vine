@@ -20,12 +20,9 @@ class ComicVineAPI {
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
-        print('Données brutes des comics : ${data['results']}');
-
         final List<dynamic> results = data['results'] ?? [];
 
         return results.map((json) {
-          print('Comic brut : $json');
 
           return {
             'name': json['volume'] != null
