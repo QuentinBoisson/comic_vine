@@ -1,7 +1,6 @@
 class Character {
   final String? story;
   final String? name;
-  final String? superHeroName;
   final String? realName;
   final String? aliases;
   final String? publisher;
@@ -14,7 +13,6 @@ class Character {
   Character({
     this.story,
     this.name,
-    this.superHeroName,
     this.realName,
     this.aliases,
     this.publisher,

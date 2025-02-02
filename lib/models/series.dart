@@ -9,7 +9,7 @@ class Series {
   final String? story;
   final List<Character>? characters;
   final List<Episode>? episodes;
-  final String? coverUrl;
+  final String? thumbnailUrl;
   final String? backgroundUrl;
 
   Series({
@@ -20,7 +20,7 @@ class Series {
     this.story,
     this.characters,
     this.episodes,
-    this.coverUrl,
+    this.thumbnailUrl,
     this.backgroundUrl,
   });
 }
